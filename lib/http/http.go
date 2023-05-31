@@ -11,6 +11,7 @@ import (
 
 type Msg map[string]string
 
+// Write JSON messages back to the client
 func JSON(w http.ResponseWriter, payload interface{}, code int)  {
 	response, err := json.Marshal(payload)
 	if err != nil {
@@ -21,6 +22,7 @@ func JSON(w http.ResponseWriter, payload interface{}, code int)  {
 	w.WriteHeader(code)
 	w.Write(response)
 }
+
 
 func SetupHandler(w http.ResponseWriter, ctx context.Context) (*zerolog.Logger, context.Context, context.CancelFunc) {
 	w.Header().Set("Content-Type", "application/json")
