@@ -6,7 +6,7 @@ import (
 	"strings"
 	"time"
 
-	db "github.com/adykaaa/online-notes/db/sqlc"
+	db "github.com/alekslesik/online-note-z/db/sqlc"
 	"github.com/google/uuid"
 )
 

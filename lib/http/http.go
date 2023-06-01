@@ -23,7 +23,6 @@ func JSON(w http.ResponseWriter, payload interface{}, code int)  {
 	w.Write(response)
 }
 
-
 func SetupHandler(w http.ResponseWriter, ctx context.Context) (*zerolog.Logger, context.Context, context.CancelFunc) {
 	w.Header().Set("Content-Type", "application/json")
 	ctx, cancel := context.WithTimeout(ctx, 5 * time.Second)

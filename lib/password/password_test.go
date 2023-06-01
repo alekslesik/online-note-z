@@ -3,7 +3,7 @@ package password
 import (
 	"testing"
 
-	"github.com/adykaaa/online-notes/lib/random"
+	"github.com/alekslesik/online-note-z/lib/random"
 	"github.com/stretchr/testify/require"
 )
 

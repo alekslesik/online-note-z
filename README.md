@@ -1,6 +1,6 @@
 ## Creating a Full-Stack Go + React application with tests — OnlineNoteZ
 
 
-https://medium.com/@adykaaa/creating-a-full-stack-go-react-application-with-tests-onlinenotez-a060bb9ded09
+https://medium.com/@adykaaa/onlinenotez-part-3-main-go-service-layer-and-testing-4f53a9b1a49a
 
 Config file https://github.com/spf13/viper
