@@ -103,6 +103,7 @@ func (s *service) DeleteNote(ctx context.Context, reqID uuid.UUID) (uuid.UUID, e
 	}
 }
 
+// Update note
 func (s *service) UpdateNote(ctx context.Context, reqID uuid.UUID, title string, text string, isTextValid bool) (uuid.UUID, error) {
 	id, err := s.q.UpdateNote(ctx, &db.UpdateNoteParams{
 		ID: reqID,

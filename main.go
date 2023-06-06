@@ -12,22 +12,22 @@ import (
 )
 
 func main() {
-	// Set config
-	config, err := config.Load(".")
+	// Set cfg
+	cfg, err := config.Load(".")
 	if err != nil {
 		log.Fatalf("Could not load config. %v", err)
 	}
 	
 	// Set logger
-	l := logger.New(config.LogLevel)
+	l := logger.New(cfg.LogLevel)
 
-	sqldb, err := db.NewSQL("postgres", config.DBConnString, &l)
+	sqldb, err := db.NewSQL("postgres", cfg.DBConnString, &l)
 	if err != nil {
 		l.Fatal().Err(err).Send()
 	}
 
 	// Do migrations	
-	err = migrations.MigrateDB(config.DBConnString, "file://db/migrations/", &l)
+	err = migrations.MigrateDB(cfg.DBConnString, "file://db/migrations/", &l)
 	if err != nil {
 		l.Fatal().Err(err).Send()
 	}
@@ -35,13 +35,13 @@ func main() {
 	s := note.NewService(sqldb)
 
 	// Set router
-	r, err := server.NewChiRouter(s, config.PASETOSecret, config.AccessTokenDuration, &l)
+	r, err := server.NewChiRouter(s, cfg.PASETOSecret, cfg.AccessTokenDuration, &l)
 	if err != nil {
 		l.Fatal().Err(err).Send()
 	}
 
 	// Set server
-	httpServer, err := server.NewHTTP(r, config.HTTPServerAddress, &l)
+	httpServer, err := server.NewHTTP(r, cfg.HTTPServerAddress, &l)
 	if err != nil {
 		l.Fatal().Err(err).Send()
 	}
