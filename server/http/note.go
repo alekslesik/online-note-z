@@ -45,7 +45,6 @@ func CreateNote(s NoteService) http.HandlerFunc {
 			l.Error().Err(err).Msgf("Note creation failed, a note with that title already exists")
 			httplib.JSON(w, httplib.Msg{"error": "a Note with that title already exists! Titles must be unique."}, http.StatusForbidden)
 			return
-			return
 		case errors.Is(err, note.ErrDBInternal):
 			l.Error().Err(err).Msgf("Error during Note creation! %v", err)
 			httplib.JSON(w, httplib.Msg{"error": "internal error during note creation"}, http.StatusInternalServerError)
