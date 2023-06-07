@@ -11,7 +11,6 @@ import (
 	"github.com/rs/zerolog"
 )
 
-
 // Middleware registration
 func registerChiMiddlewares(r *chi.Mux, l *zerolog.Logger) {
 	// Request logger has middleware.Recoverer and RequestID baked into it.
@@ -29,7 +28,7 @@ func registerChiMiddlewares(r *chi.Mux, l *zerolog.Logger) {
 }
 
 // Handlers registartion
-func registerChiHandlers(r *chi.Mux, s NoteService, t auth.TokenManager, tokenDuration time.Duration, l *zerolog.Logger)  {
+func registerChiHandlers(r *chi.Mux, s NoteService, t auth.TokenManager, tokenDuration time.Duration, l *zerolog.Logger) {
 	r.Post("/register", RegisterUser(s))
 	r.Post("/login", LoginUser(s, t, tokenDuration))
 	r.Post("/logout", LogoutUser())
@@ -45,7 +44,7 @@ func registerChiHandlers(r *chi.Mux, s NoteService, t auth.TokenManager, tokenDu
 }
 
 // Create new router
-func NewChiRouter(s NoteService, symmetricKey string, tokenDuration time.Duration, l *zerolog.Logger) (*chi.Mux, error)  {
+func NewChiRouter(s NoteService, symmetricKey string, tokenDuration time.Duration, l *zerolog.Logger) (*chi.Mux, error) {
 	pm, err := auth.NewPasetoManager(symmetricKey)
 	if err != nil {
 		l.Err(err).Msgf("could not create a new PasetoCreator. %v", err)
@@ -66,7 +65,6 @@ type Server struct {
 func (s *Server) Shutdown() error {
 	return nil
 }
-
 
 func NewHTTP(r interface{}, address string, logger *zerolog.Logger) (Server, error) {
 	return Server{}, nil
