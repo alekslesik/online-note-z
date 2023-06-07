@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"errors"
+	"flag"
 	"net/http"
 	"strings"
 
@@ -94,6 +95,100 @@ func GetAllNotesFromUser(s NoteService) http.HandlerFunc {
 		default:
 			l.Info().Msgf("Retriving user notes for %s was successful!", username)
 			httplib.JSON(w, notes, http.StatusOK)
+		}
+	}
+}
+
+// DELETE /notes/{id}
+func DeleteNote(s NoteService) http.HandlerFunc {
+	// take logger and context
+	return func(w http.ResponseWriter, r *http.Request) {
+		l, ctx, cancel := httplib.SetupHandler(w, r.Context())
+		defer cancel()
+
+		// parse URL path and take "id" and convert it to UUID
+		reqUUID, err := uuid.Parse(strings.Split(r.URL.Path, "/")[2])
+		if err != nil {
+			l.Info().Msgf("Could not convert ID to UUID.")
+			httplib.JSON(w, httplib.Msg{"error": "could not convert note id to uuid"}, http.StatusBadRequest)
+			return
+		}
+
+		// delete note
+		id, err := s.DeleteNote(ctx, reqUUID)
+		switch {
+		case errors.Is(err, sql.ErrNoRows):
+			l.Info().Msg("User has no notes to delete from!")
+		case errors.Is(err, note.ErrDBInternal):
+			l.Info().Err(err).Msgf("Could not delete Note %v from the DB!", reqUUID)
+			httplib.JSON(w, httplib.Msg{"error": "could not delete note from DB"}, http.StatusInternalServerError)
+			return
+
+		// return successful JSON response to user
+		default:
+			l.Info().Msgf("Deleting note %v was successful!", id)
+			httplib.JSON(w, httplib.Msg{"success": "note deleted"}, http.StatusOK)
+			return
+		}
+	}
+}
+
+// PUT /notes/{id}
+func UpdateNote(s NoteService) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		// take logger and context
+		l, ctx, cancel := httplib.SetupHandler(w, r.Context())
+		defer cancel()
+
+		var isTextValid bool = true
+
+		// parse URL path and take "id" and convert it to UUID
+		reqUUID, err := uuid.Parse(strings.Split(r.URL.Path, "/")[2])
+		if err != nil {
+			l.Info().Msgf("Could not convert ID to UUID.")
+			httplib.JSON(w, httplib.Msg{"error": "could not convert note id to uuid"}, http.StatusBadRequest)
+			return
+		}
+
+		// create struct for decode
+		updateRequest := struct {
+			Title string `json:"title" validate:"required, min=4"`
+			Text  string `json:"text"`
+		}{}
+
+		// decode request body
+		err = json.NewDecoder(r.Body).Decode(&updateRequest)
+		if err != nil {
+			l.Error().Err(err).Msgf("error decoding the Note into httplib.JSON during registration. %v", err)
+			httplib.JSON(w, httplib.Msg{"error": "internal error decoding Note struct"}, http.StatusInternalServerError)
+			return
+		}
+
+		validate := validator.New()
+
+		// struct validate
+		err = validate.Struct(&updateRequest)
+		if err != nil {
+			l.Error().Err(err).Msgf("title must be more than 4 characters long!")
+			httplib.JSON(w, httplib.Msg{"error": "title of a note must be more than 4 characters long!"}, http.StatusBadRequest)
+			return
+		}
+
+		if updateRequest.Text == "" {
+			isTextValid = false
+		}
+
+		// update struct in DB
+		id, err := s.UpdateNote(ctx, reqUUID, updateRequest.Title, updateRequest.Text, isTextValid)
+		switch {
+		case errors.Is(err, note.ErrDBInternal):
+			l.Info().Err(err).Msgf("Could not update Note %v", reqUUID)
+			httplib.JSON(w, httplib.Msg{"error": "could not update note"}, http.StatusInternalServerError)
+			return
+		default:
+			l.Info().Msgf("Updating note %v was successful!", id)
+			httplib.JSON(w, httplib.Msg{"success": "note deleted"}, http.StatusOK)
+			return
 		}
 	}
 }

@@ -4,7 +4,7 @@ import (
 	"context"
 
 	db "github.com/adykaaa/online-notes/db/sqlc"
-	"github.com/gofrs/uuid"
+	"github.com/google/uuid"
 )
 
 type NoteService interface {
