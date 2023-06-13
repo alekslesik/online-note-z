@@ -4,7 +4,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"errors"
-	"flag"
+	// "flag"
 	"net/http"
 	"strings"
 
@@ -13,7 +13,7 @@ import (
 	models "github.com/alekslesik/online-note-z/server/http/models"
 	"github.com/go-playground/validator/v10"
 	"github.com/google/uuid"
-	"golang.org/x/text/cases"
+	// "golang.org/x/text/cases"
 )
 
 // POST /notes/create
