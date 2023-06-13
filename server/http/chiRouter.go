@@ -27,13 +27,13 @@ func registerChiMiddlewares(r *chi.Mux, l *zerolog.Logger) {
 		}))
 }
 
-// Handlers registartion
+// Handlers registration
 func registerChiHandlers(r *chi.Mux, s NoteService, t auth.TokenManager, tokenDuration time.Duration, l *zerolog.Logger) {
 	r.Post("/register", RegisterUser(s))
 	r.Post("/login", LoginUser(s, t, tokenDuration))
 	r.Post("/logout", LogoutUser())
 
-	// subrouter with other middleware
+	// subroutine with other middleware
 	r.Route("/notes", func(r chi.Router) {
 		r.Use(auth.AuthMiddleware(t, l))
 		r.Post("/create", CreateNote(s))

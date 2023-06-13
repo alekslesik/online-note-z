@@ -8,7 +8,7 @@ import (
 )
 
 type Config struct {
-	Enviroment          string        `mapstructure:"ENV"`
+	Environment         string        `mapstructure:"ENV"`
 	LogLevel            string        `mapstructure:"LOG_LEVEL"`
 	DBConnString        string        `mapstructure:"DB_CONN_STRING"`
 	HTTPServerAddress   string        `mapstructure:"HTTP_SERVER_ADDRESS"`

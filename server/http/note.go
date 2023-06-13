@@ -23,10 +23,10 @@ func CreateNote(s NoteService) http.HandlerFunc {
 		l, ctx, cancel := httplib.SetupHandler(w, r.Context())
 		defer cancel()
 
-		// models.Note instanse
+		// models.Note instance
 		var noteRequest models.Note
 
-		// decode request body to instanse
+		// decode request body to instance
 		err := json.NewDecoder(r.Body).Decode(&noteRequest)
 		if err != nil {
 			l.Error().Err(err).Msgf("error decoding the Note into httplib.JSON during registration. %v", err)
@@ -93,7 +93,7 @@ func GetAllNotesFromUser(s NoteService) http.HandlerFunc {
 
 		// return successful JSON response to user
 		default:
-			l.Info().Msgf("Retriving user notes for %s was successful!", username)
+			l.Info().Msgf("Retrieving user notes for %s was successful!", username)
 			httplib.JSON(w, notes, http.StatusOK)
 		}
 	}

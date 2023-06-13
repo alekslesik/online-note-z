@@ -16,7 +16,7 @@ func New(level string) zerolog.Logger {
 	// This is important, as we want to trace the root of our errors
 	zerolog.ErrorStackMarshaler = pkgerrors.MarshalStack
 
-	// Setting the loglevel
+	// Setting the log level
 	loglevel, err := zerolog.ParseLevel(level)
 	if err != nil {
 		zerolog.SetGlobalLevel(zerolog.InfoLevel)

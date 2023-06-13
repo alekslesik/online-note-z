@@ -50,5 +50,4 @@ func main() {
 	if err != nil {
 		l.Fatal().Err(err).Send()
 	}
-
 }
