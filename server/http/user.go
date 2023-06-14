@@ -3,6 +3,7 @@ package server
 import (
 	"encoding/json"
 	"errors"
+	"io"
 	"net/http"
 	"time"
 
@@ -138,6 +139,21 @@ func LoginUser(s NoteService, token auth.TokenManager, tokenDuration time.Durati
 // POST /logout/
 func LogoutUser() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		// take logger and context
+		l, _, cancel := httplib.SetupHandler(w, r.Context())
+		defer cancel()
 
+		// read username
+		uname, err := io.ReadAll(r.Body)
+		if err != nil {
+			l.Info().Err(err).Msgf("Could not decode request body while logging out. %v", err)
+			httplib.JSON(w, httplib.Msg{"error": "couldn't decode request body"}, http.StatusInternalServerError)
+			return
+		}
+
+		// reset paseto cookie
+		httplib.SetCookie(w, "paseto", "", time.Unix(0, 0))
+		httplib.JSON(w, httplib.Msg{"success": "user successfully logged out"}, http.StatusOK)
+		l.Info().Msgf("User logout for %s was successful!", string(uname))
 	}
 }
