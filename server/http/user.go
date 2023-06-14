@@ -24,8 +24,8 @@ func RegisterUser(s NoteService) http.HandlerFunc {
 
 		// models.User instance
 		var req models.User
-		// decode request body to instance
 
+		// decode request body to instance
 		err := json.NewDecoder(r.Body).Decode(&req)
 		if err != nil {
 			l.Error().Err(err).Msgf("error decoding the User into JSON during registration. %v", err)
@@ -82,6 +82,56 @@ func RegisterUser(s NoteService) http.HandlerFunc {
 // POST /login/
 func LoginUser(s NoteService, token auth.TokenManager, tokenDuration time.Duration) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		// take logger and context
+		l, ctx, cancel := httplib.SetupHandler(w, r.Context())
+		defer cancel()
+
+		req := struct {
+			Username string `json:"username"`
+			Password string `json:"password"`
+		}{}
+
+		// decode request body to instance
+		err := json.NewDecoder(r.Body).Decode(&req)
+		if err != nil {
+			l.Error().Err(err).Msgf("error decoding the User into JSON during registration. %v", err)
+			httplib.JSON(w, httplib.Msg{"error": "internal error decoding User struct"}, http.StatusInternalServerError)
+			return
+		}
+
+		// get user from DB
+		user, err := s.GetUser(ctx, req.Username)
+		switch {
+		case errors.Is(err, note.ErrUserNotFound):
+			l.Error().Err(err).Msgf("user: %s is not found", req.Username)
+			httplib.JSON(w, httplib.Msg{"error": "user is not found"}, http.StatusForbidden)
+			return
+		case errors.Is(err, note.ErrDBInternal):
+			l.Error().Err(err).Msgf("Error during user lookup! %v", err)
+			httplib.JSON(w, httplib.Msg{"error": "internal error during user lookup!"}, http.StatusInternalServerError)
+			return
+		}
+
+		// validate requested password with DB password
+		err = password.Validate(user.Password, req.Password)
+		if err != nil {
+			l.Info().Err(err).Msgf("Wrong password was provided for user %s", req.Username)
+			httplib.JSON(w, httplib.Msg{"error": "wrong password was provided"}, http.StatusUnauthorized)
+			return
+		}
+
+		// TODO read about paseto
+		// create token fpr requested user
+		token, payload, err := token.CreateToken(req.Username, tokenDuration)
+		if err != nil {
+			l.Info().Err(err).Msgf("Could not create PASETO for user. %v", err)
+			httplib.JSON(w, httplib.Msg{"error": "internal server error while creating the token"}, http.StatusInternalServerError)
+			return
+		}
+
+		httplib.SetCookie(w, "paseto", token, payload.ExpiresAt)
+		httplib.JSON(w, httplib.Msg{"success": "login successful"}, http.StatusOK)
+		l.Info().Msgf("User login for %s was successful!", req.Username)
 	}
 }
 

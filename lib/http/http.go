@@ -31,7 +31,7 @@ func SetupHandler(w http.ResponseWriter, ctx context.Context) (*zerolog.Logger, 
 	return l, ctx, cancel
 }
 
-// Set cookie
+// Wrapper to set cookie
 func SetCookie(w http.ResponseWriter, name string, token string, expiresAt time.Time)  {
 	http.SetCookie(w, &http.Cookie{
 		Name: name,
