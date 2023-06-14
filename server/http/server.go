@@ -14,4 +14,4 @@ type NoteService interface {
 	UpdateNote(ctx context.Context, reqID uuid.UUID, title string, text string, isTextEmpty bool) (uuid.UUID, error)
 	RegisterUser(ctx context.Context, args *db.RegisterUserParams) (string, error)
 	GetUser(ctx context.Context, username string) (db.User, error)
- }
+}
