@@ -21,6 +21,7 @@ func main() {
 	// Set logger
 	l := logger.New(cfg.LogLevel)
 
+	// Set data base
 	sqldb, err := db.NewSQL("postgres", cfg.DBConnString, &l)
 	if err != nil {
 		l.Fatal().Err(err).Send()
@@ -46,6 +47,7 @@ func main() {
 		l.Fatal().Err(err).Send()
 	}
 
+	// Shutdown server
 	err = httpServer.Shutdown()
 	if err != nil {
 		l.Fatal().Err(err).Send()

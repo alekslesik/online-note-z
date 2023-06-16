@@ -122,7 +122,7 @@ func LoginUser(s NoteService, token auth.TokenManager, tokenDuration time.Durati
 		}
 
 		// TODO read about paseto
-		// create token fpr requested user
+		// create PASETO token for requested user
 		token, payload, err := token.CreateToken(req.Username, tokenDuration)
 		if err != nil {
 			l.Info().Err(err).Msgf("Could not create PASETO for user. %v", err)
