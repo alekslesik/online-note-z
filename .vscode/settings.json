@@ -3,6 +3,7 @@
         "invalidtoken",
         "mocksvc",
         "stretchr",
+        "testtoken",
         "wrongkeylength"
     ]
 }
